@@ -6,7 +6,7 @@ export default function Sidebar() {
             <ul className ="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
                 <a className ="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                     <div className ="sidebar-brand-icon">
-                        <img src="backend/img/logo/logo2.png"/>
+                        <img src="backend/img/logo/logo2.png" alt=''/>
                     </div>
                     <div className ="sidebar-brand-text mx-3">RuangAdmin</div>
                 </a>
