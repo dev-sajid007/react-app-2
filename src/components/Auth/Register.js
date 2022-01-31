@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import {Link, Redirect } from 'react-router-dom';
 import axios from "axios";
 import Swal from 'sweetalert2';
+
+
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -19,13 +21,16 @@ export default function Register() {
     const [name,SetName] = useState("")
     const [email,SetEmail] = useState("")
     const [password,SetPassword] = useState("")
+    const [redirect,setRedirect] = useState(false);
 
-    function Signup(){
+
+    const Signup = () => {
+
         let items = {'name':name,'email':email,'password':password};
         
         
     
-        axios.post('http://api-main.test/api/register',items,{
+        axios.post('http://fooddoose-main.test/api/register',items,{
             'content-type' : 'Application/json'
         })
         .then(
@@ -39,9 +44,22 @@ export default function Register() {
             console.log("ERROR:: ",error.response.data);
             
             });
+        
+        setRedirect(true);    
 
+     
 
     }
+
+    if (redirect) {
+        return <Redirect to="/login"/>;
+    }
+
+
+
+    
+
+
     return (
         <div>
             <div className="row justify-content-center">
