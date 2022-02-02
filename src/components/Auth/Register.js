@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Link, Redirect } from 'react-router-dom';
+import {Link, Navigate } from 'react-router-dom';
 import axios from "axios";
 import Swal from 'sweetalert2';
 
@@ -8,7 +8,7 @@ const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
-    timer: 3000,
+    timer: 2000,
     timerProgressBar: true,
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -21,12 +21,13 @@ export default function Register() {
     const [name,SetName] = useState("")
     const [email,SetEmail] = useState("")
     const [password,SetPassword] = useState("")
+    const [password_confirmation,SetPasswordConfirmation] = useState("")
     const [redirect,setRedirect] = useState(false);
-
-
+    const [errors,serErrors] = useState("");
+   
     const Signup = () => {
 
-        let items = {'name':name,'email':email,'password':password};
+        let items = {'name':name,'email':email,'password':password,'password_confirmation':password_confirmation};
         
         
     
@@ -34,30 +35,31 @@ export default function Register() {
             'content-type' : 'Application/json'
         })
         .then(
-            response => Toast.fire({
-                icon: 'success',
-                title: response.data.message
-              })
+            response => {
+              if(response.data.message){
+                Toast.fire({
+                    icon: 'success',
+                    title: response.data.message
+                  })
+                setRedirect(true)
+              }
+            }
             
             )
         .catch(error => {
             console.log("ERROR:: ",error.response.data);
-            
+            serErrors(error.response.data.errors);
             });
         
-        setRedirect(true);    
 
      
 
     }
 
     if (redirect) {
-        return <Redirect to="/login"/>;
+        return <Navigate to="/"/>;
     }
 
-
-
-    
 
 
     return (
@@ -75,20 +77,21 @@ export default function Register() {
                                         <form className="user">
                                             <div className="form-group" >
                                                 <input type="text" value={name} onChange={(e)=>SetName(e.target.value)} className="form-control" id="exampleInputFirstName" placeholder="Enter Full Name" />
-                                                <small className="text-danger" v-if="errors.name"></small>
+                                                <small className="text-danger">{errors.name}</small>
                                             </div>
                                             <div className="form-group">
                                                 <input type="email" value={email}  onChange={(e)=> SetEmail(e.target.value)} className="form-control" id="exampleInputEmail" aria-describedby="emailHelp"
                                                     placeholder="Enter Email Address" v-model="form.email" />
-                                                <small className="text-danger" v-if="errors.email"></small>
+                                                <small className="text-danger">{errors.email}</small>
                                             </div>
                                             <div className="form-group">
                                                 <input type="password" value={password}  onChange={(e)=> SetPassword(e.target.value)} className="form-control" id="exampleInputPassword" placeholder="Password" v-model="form.password" />
-                                                <small className="text-danger" v-if="errors.password"></small>
+                                                <small className="text-danger">{errors.password}</small>
                                             </div>
                                             <div className="form-group">
-                                                <input type="password" className="form-control" id="exampleInputPasswordRepeat"
-                                                    placeholder="Repeat Password" v-model="form.password_confirmation" />
+                                                <input type="password" className="form-control" onChange={(e)=>SetPasswordConfirmation(e.target.value)}
+                                                    placeholder="Repeat Password" />
+                                                <small className="text-danger">{errors.password_confirmation}</small>    
                                             </div>
                                             <div className="form-group">
                                                 <button onClick={Signup} type="button" className="btn btn-primary btn-block">Register</button>
