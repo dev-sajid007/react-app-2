@@ -1,6 +1,63 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import axios from 'axios';
+import React, { useState } from 'react'
+import { Link, Navigate } from 'react-router-dom'
+import Swal from 'sweetalert2';
+
 export default function Login() {
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
+    const [email,SetEmail] = useState("");
+    const [password,SetPassword] = useState("");
+    const [errors,serErrors] = useState("");
+    const [redirect,setRedirect] = useState(false);
+
+    const Login = (e) => {
+        e.preventDefault();
+        let items = {'email':email,'password':password};
+
+        axios.post('http://fooddoose-main.test/api/login',items,{
+            'content-type' : 'Application/json'
+        }).then(
+            response => {
+                if(response.data.status === 201){
+                    localStorage.setItem('token',response.data.token);
+                    localStorage.setItem('user_name',response.data.user.name);
+                    setRedirect(true)
+              
+                }
+            }
+        )
+        .catch(error => {
+            console.log("ERROR:: ",error.response.data);
+            // serErrors(error.response.data.errors);
+            Toast.fire({
+                icon: 'error',
+                title: error.response.data.message
+              })
+            if(error.response.data.errors){
+                serErrors(error.response.data.errors);
+            }else{
+                serErrors('');
+            }
+            });
+    }
+
+    if (redirect) {
+        return <Navigate to="/dashboard"/>;
+    }
+
+
     return (
         <div>
             <div className="row justify-content-center">
@@ -15,13 +72,13 @@ export default function Login() {
                                         </div>
                                         <form className="user">
                                         <div className="form-group">
-                                            <input type="email" className="form-control" id="exampleInputEmail" aria-describedby="emailHelp"
+                                            <input type="email" className="form-control" onChange={(e)=>SetEmail(e.target.value)}
                                                 placeholder="Enter Email Address" />
-                                                <small className="text-danger" ></small>
+                                                <small className="text-danger">{errors.email}</small>
                                         </div>
                                         <div className="form-group">
-                                            <input type="password" className="form-control" id="exampleInputPassword" placeholder="Password" />
-                                                <small className="text-danger"></small>
+                                            <input type="password" className="form-control" onChange={(e)=>SetPassword(e.target.value)} placeholder="Password" />
+                                            {/* <small className="text-danger">{errors.password}</small> */}
                                         </div>
                                         <div className="form-group">
                                             <div className="custom-control custom-checkbox small" style={{lineHeight: '1.5rem'}}>
@@ -31,7 +88,7 @@ export default function Login() {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <button type="submit" className="btn btn-primary btn-block">Login</button>
+                                            <button type="button" onClick={Login} className="btn btn-primary btn-block">Login</button>
                                         </div>
                                     </form>
                                     <hr/>

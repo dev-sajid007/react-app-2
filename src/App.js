@@ -4,6 +4,8 @@ import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import Register from './components/Auth/Register';
 import Login from './components/Auth/Login';
+import Dashboard from './components/Dashboard';
+
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
             
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               </Routes>
           
               </div>

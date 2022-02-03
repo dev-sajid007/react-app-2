@@ -48,6 +48,7 @@ export default function Register() {
             )
         .catch(error => {
             console.log("ERROR:: ",error.response.data);
+            
             serErrors(error.response.data.errors);
             });
         
